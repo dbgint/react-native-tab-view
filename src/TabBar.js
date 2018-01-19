@@ -37,6 +37,7 @@ type Props<T> = SceneRendererProps<T> & {
   pressColor?: string,
   pressOpacity?: number,
   getLabelText: (scene: Scene<T>) => ?string,
+  getTestIDProps: (scene: Scene<T>) => any,
   renderLabel?: (scene: Scene<T>) => ?React.Element<any>,
   renderIcon?: (scene: Scene<T>) => ?React.Element<any>,
   renderBadge?: (scene: Scene<T>) => ?React.Element<any>,
@@ -179,6 +180,12 @@ export default class TabBar<T: Route<*>> extends React.PureComponent<
         ]}
       />
     );
+  };
+
+  _renderTestIDProps = (scene: Scene<*>) => {
+    const testIDProps =
+      this.props.getTestIDProps && this.props.getTestIDProps(scene);
+    return testIDProps;
   };
 
   _tabWidthCache: ?{ style: any, width: ?number };
@@ -444,14 +451,14 @@ export default class TabBar<T: Route<*>> extends React.PureComponent<
                 tabContainerStyle.flex = 1;
               }
 
-              const accessibilityLabel =
-                route.accessibilityLabel || route.title;
+              const extraProps = this._renderTestIDProps(scene) || {};
+              const { testID, accessibilityLabel } = extraProps;
 
               return (
                 <TouchableItem
                   borderless
                   key={route.key}
-                  testID={route.testID}
+                  testID={testID}
                   accessible={route.accessible}
                   accessibilityLabel={accessibilityLabel}
                   accessibilityTraits="button"
